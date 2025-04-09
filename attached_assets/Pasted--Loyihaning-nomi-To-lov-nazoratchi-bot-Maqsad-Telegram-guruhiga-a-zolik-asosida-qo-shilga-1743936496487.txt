@@ -1,0 +1,133 @@
+📌 Loyihaning nomi: To‘lov nazoratchi bot
+
+🎯 Maqsad:
+Telegram guruhiga a’zolik asosida qo‘shilgan foydalanuvchilarning to‘lovlarini avtomatik nazorat qilish, eslatmalar yuborish, to‘lovni adminlar tomonidan tasdiqlash orqali a’zolikni davom ettirish yoki o‘chirish.
+
+---
+
+🧱 Texnologiyalar:
+- Backend: Node.js (Express.js)
+- Ma’lumotlar bazasi: MongoDB
+- Fayllar saqlash: uploads/ papkasiga cheklar (rasm fayllari)
+- Telegram Bot API: node-telegram-bot-api kutubxonasi orqali
+
+---
+
+👤 Foydalanuvchi rollari:
+1. Admin
+2. Oddiy foydalanuvchi (User)
+
+---
+
+👨‍💻 Foydalanuvchi (User) funksiyalari:
+
+1. /start bosganda:
+- Ismi va familiyasi so‘raladi.
+- Telefon raqami so‘raladi.
+- Ma’lumotlar bazaga saqlanadi.
+
+2. Chek yuborish:
+- Foydalanuvchi guruhga qo‘shilish uchun rasm shaklida chekni yuboradi.
+- Chek uploads/ papkaga saqlanadi.
+- Adminlarga quyidagi ma’lumotlar yuboriladi:
+  - Ism familya
+  - Telefon raqam
+  - Chek rasmi
+  - Inline tugmalar: ✅ Tasdiqlash | ❌ Bekor qilish
+
+3. To‘lov holati:
+- Tasdiqlansa, foydalanuvchiga tasdiqlash matni yuboriladi.
+- Tasdiqlangach, a’zolik 1 oyga uzaytiriladi.
+- A’zolik muddati backendda hisoblanadi.
+
+4. Ogohlantirishlar (eslatmalar):
+- 3 kun qolganda, 2 kun, 1 kun va aynan o‘sha kuni quyidagi eslatmalar yuboriladi:
+  - 09:00
+  - 15:00
+  - 21:00
+
+5. To‘lov qilinmasa:
+- 1 oydan keyin foydalanuvchi avtomatik guruhdan chiqariladi.
+- Xabar yuboriladi: ⏳ A’zolik muddati tugadi. Siz guruhdan chiqarildingiz.
+
+6. Qo‘shimcha tugmalar:
+- 📎 Bot haqida
+- 📞 Aloqa
+- 📤 To‘lov holatim (to‘lov holatini ko‘rsatadi)
+
+---
+
+👨‍💼 Admin funksiyalari:
+
+1. Kutib turganlar
+- Chek yuborgan foydalanuvchilar ro‘yxati ko‘rsatiladi.
+- Har bir foydalanuvchi uchun:
+  - Rasm (chek)
+  - Ism familya
+  - Telefon raqam
+  - Tugmalar: ✅ Tasdiqlash | ❌ Bekor qilish
+    - ❌ Bekor qilish bosilsa, admin sabab yozadi va foydalanuvchiga yuboriladi.
+    - ✅ Tasdiqlash bosilsa, foydalanuvchi tasdiqlanadi va 1 oylik a’zolik boshlanadi.
+
+### 2. Foydalanuvchilar ro‘yxati
+- Hozirgi barcha faol foydalanuvchilar ro‘yxati
+- Har bir foydalanuvchi uchun:
+  - Qancha muddat qolganini ko‘rish
+  - Chekni ko‘rish
+  - ❌ Guruhdan chiqarish
+    - Sabab soraladi, foydalanuvchiga yuboriladi va chiqariladi.
+
+### 3. Matnlar menyusi
+- Har bir quyidagi matnni admin paneldan o‘zgartirish mumkin:
+  - Start bosilgandagi matn
+  - Chek yuborishdan oldingi tushuntirish matni
+  - Bot haqida matni
+  - Aloqa matni
+  - Tasdiqlangandagi tabrik matni
+
+---
+
+🗂 Ma’lumotlar bazasi tuzilmasi (MongoDB):
+
+ 1. Users
+{
+  _id,
+  telegramId,
+  fullName,
+  phoneNumber,
+  joinDate, // a’zolik boshlanish sanasi
+  paymentStatus: "pending" | "approved" | "rejected",
+  paymentProof: "uploads/chek.jpg",
+  paymentExpiryDate, // 1 oylik amal qilish muddati
+  isActive: Boolean
+}
+
+2. Admins
+{
+  _id,
+  telegramId,
+  fullName
+}
+
+3. Texts
+{
+  startMessage,
+  beforePaymentMessage,
+  aboutBotMessage,
+  contactMessage,
+  approvedMessage
+}
+
+---
+
+📆 Cron (jadval bo‘yicha vazifalar):
+- Har kuni 09:00, 15:00, 21:00 da 3/2/1 kun va bugun bo‘lgan foydalanuvchilarga xabar yuboriladi.
+- Har kech soat 23:59 da amal muddati tugagan foydalanuvchilar tekshirib chiqariladi va avtomatik chiqariladi.
+
+---
+
+✅ Qo‘shimcha eslatmalar:
+- Foydalanuvchi faqat tasdiqlangach guruhda qoladi.
+- Guruhdan chiqarish bot.kickChatMember() orqali amalga oshiriladi.
+- Admin bir nechta bo‘lishi mumkin.
+- Matnlar adminlar tomonidan har doim yangilanishi mumkin.
