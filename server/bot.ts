@@ -21,10 +21,10 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
   if (!token) {
     throw new Error("TELEGRAM_BOT_TOKEN is required");
   }
-  
+
   // Save storage instance globally
   storage = storageInstance;
-  
+
   bot = new TelegramBot(token, { polling: true });
 
   // Start command handler
@@ -65,11 +65,11 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
       bot.sendMessage(
         chatId,
         `🔐 *Admin Panel*\n\n` +
-          `👥 Jami foydalanuvchilar: ${users.length}\n` +
-          `⏳ Kutilayotgan to'lovlar: ${pendingUsers.length}\n` +
-          `✅ Tasdiqlangan to'lovlar: ${approvedUsers.length}\n` +
-          `❌ Bekor qilingan to'lovlar: ${rejectedUsers.length}\n` +
-          `⚠️ 3 kun ichida tugaydigan a'zoliklar: ${expiringUsers.length}`,
+        `👥 Jami foydalanuvchilar: ${users.length}\n` +
+        `⏳ Kutilayotgan to'lovlar: ${pendingUsers.length}\n` +
+        `✅ Tasdiqlangan to'lovlar: ${approvedUsers.length}\n` +
+        `❌ Bekor qilingan to'lovlar: ${rejectedUsers.length}\n` +
+        `⚠️ 3 kun ichida tugaydigan a'zoliklar: ${expiringUsers.length}`,
         {
           parse_mode: "Markdown",
           reply_markup: {
@@ -172,7 +172,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
     const userId = msg.from?.id.toString();
 
     if (!userId) return;
-    
+
     // Check if user is admin - administrators don't need registration
     const isAdmin = await storage.getAdminByTelegramId(userId);
     if (isAdmin) {
@@ -231,7 +231,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
         bot.sendMessage(
           chatId,
           paymentText?.value ||
-            "To'lovni amalga oshirish uchun quyidagi hisob raqamga mablag' o'tkazing va to'lov chekini rasm shaklida yuboring.",
+          "To'lovni amalga oshirish uchun quyidagi hisob raqamga mablag' o'tkazing va to'lov chekini rasm shaklida yuboring.",
         );
       } catch (error) {
         console.error("Error creating user:", error);
@@ -250,7 +250,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
     const userId = msg.from?.id.toString();
 
     if (!userId) return;
-    
+
     // Check if user is admin - administrators don't need to upload payment receipts
     const isAdmin = await storage.getAdminByTelegramId(userId);
     if (isAdmin) {
@@ -343,10 +343,10 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
       bot.sendMessage(chatId, "Siz ro'yxatdan o'tmagansiz, iltimos /start buyrug'ini bosing.");
       return;
     }
-    
+
     // Check if the user is eligible for payment renewal (approaching expiry date or already expired)
     let isEligibleForPayment = false;
-    
+
     if (user.paymentStatus === PaymentStatus.EXPIRED) {
       // Already expired users can make payment
       isEligibleForPayment = true;
@@ -354,17 +354,17 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
       // Check days remaining
       const expiryDate = new Date(user.paymentExpiryDate);
       const today = new Date();
-      
+
       // Calculate days difference
       const timeDiff = expiryDate.getTime() - today.getTime();
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-      
+
       console.log(`User ${user.fullName} (ID: ${user.id}) has ${daysDiff} days until expiry`);
-      
+
       // Eligible if 3 or fewer days remaining
       isEligibleForPayment = (daysDiff <= 3);
     }
-    
+
     if (!isEligibleForPayment) {
       // User trying to make payment when not needed
       bot.sendMessage(
@@ -380,10 +380,10 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
 
     // Send payment information
     const paymentText = await storage.getText("beforePaymentMessage");
-    
+
     bot.sendMessage(
       chatId,
-      paymentText?.value || 
+      paymentText?.value ||
       "To'lovni amalga oshirish uchun quyidagi hisob raqamga mablag' o'tkazing va to'lov chekini rasm shaklida yuboring.",
     );
   });
@@ -396,7 +396,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
     bot.sendMessage(
       chatId,
       aboutText?.value ||
-        "Bu bot guruh a'zoliklarini nazorat qilish uchun yaratilgan. A'zolik muddati 1 oy davom etadi va to'lov o'z vaqtida amalga oshirilishi kerak.",
+      "Bu bot guruh a'zoliklarini nazorat qilish uchun yaratilgan. A'zolik muddati 1 oy davom etadi va to'lov o'z vaqtida amalga oshirilishi kerak.",
     );
   });
 
@@ -407,7 +407,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
     bot.sendMessage(
       chatId,
       contactText?.value ||
-        "Savollar va takliflar uchun: @admin_username bilan bog'laning.",
+      "Savollar va takliflar uchun: @admin_username bilan bog'laning.",
     );
   });
 
@@ -434,8 +434,8 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
       bot.sendMessage(
         chatId,
         "⚠️ Siz hali to'lov chekini yubormagansiz!\n\n" +
-          (paymentText?.value ||
-            "To'lovni amalga oshirish uchun quyidagi hisob raqamga mablag' o'tkazing va to'lov chekini rasm shaklida yuboring."),
+        (paymentText?.value ||
+          "To'lovni amalga oshirish uchun quyidagi hisob raqamga mablag' o'tkazing va to'lov chekini rasm shaklida yuboring."),
       );
       return;
     }
@@ -469,7 +469,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
         bot.sendMessage(
           chatId,
           paymentText?.value ||
-            "To'lovni amalga oshirish uchun quyidagi hisob raqamga mablag' o'tkazing va to'lov chekini rasm shaklida yuboring.",
+          "To'lovni amalga oshirish uchun quyidagi hisob raqamga mablag' o'tkazing va to'lov chekini rasm shaklida yuboring.",
         );
         return;
 
@@ -620,11 +620,11 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
     bot.sendMessage(
       chatId,
       `🔐 *Admin Panel*\n\n` +
-        `👥 Jami foydalanuvchilar: ${users.length}\n` +
-        `⏳ Kutilayotgan to'lovlar: ${pendingUsers.length}\n` +
-        `✅ Tasdiqlangan to'lovlar: ${approvedUsers.length}\n` +
-        `❌ Bekor qilingan to'lovlar: ${rejectedUsers.length}\n` +
-        `⚠️ 3 kun ichida tugaydigan a'zoliklar: ${expiringUsers.length}`,
+      `👥 Jami foydalanuvchilar: ${users.length}\n` +
+      `⏳ Kutilayotgan to'lovlar: ${pendingUsers.length}\n` +
+      `✅ Tasdiqlangan to'lovlar: ${approvedUsers.length}\n` +
+      `❌ Bekor qilingan to'lovlar: ${rejectedUsers.length}\n` +
+      `⚠️ 3 kun ichida tugaydigan a'zoliklar: ${expiringUsers.length}`,
       {
         parse_mode: "Markdown",
         reply_markup: {
@@ -675,21 +675,21 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
       // For regular users, check if they are near expiry date (for payment button)
       const user = await storage.getUserByTelegramId(userId);
       const shouldShowPaymentButton = await checkIfUserNeedsPayment(user);
-      
+
       // Regular user keyboard - determine if payment button should be visible
       const keyboard: KeyboardButton[][] = [];
-      
+
       // Main button row always visible
       keyboard.push([{ text: "📤 To'lov holatim" }]);
-      
+
       // Payment button only shown when expiry date is approaching
       if (shouldShowPaymentButton) {
         keyboard.push([{ text: "💰 To'lovni amalga oshirish" }]);
       }
-      
+
       // Bottom row with info buttons always visible
       keyboard.push([{ text: "📎 Bot haqida" }, { text: "📞 Aloqa" }]);
-      
+
       return {
         reply_markup: {
           keyboard: keyboard,
@@ -698,29 +698,29 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
       };
     }
   }
-  
+
   // Helper function to check if user needs to make a payment
   async function checkIfUserNeedsPayment(user: any): Promise<boolean> {
     if (!user) return false;
-    
+
     // Already expired users need to make a payment
     if (user.paymentStatus === PaymentStatus.EXPIRED || user.paymentStatus === PaymentStatus.REJECTED) {
       return true;
     }
-    
+
     // If user has an expiry date, check how many days remain
     if (user.paymentExpiryDate) {
       const expiryDate = new Date(user.paymentExpiryDate);
       const today = new Date();
-      
+
       // Calculate days difference
       const timeDiff = expiryDate.getTime() - today.getTime();
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-      
+
       // Show payment button if 3 or fewer days remain
       return (daysDiff <= 3);
     }
-    
+
     return false;
   }
 
@@ -735,7 +735,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
       bot.sendMessage(
         chatId,
         startText?.value ||
-          "Assalomu alaykum! To'lov nazoratchi botga xush kelibsiz.\n\nIltimos, ro'yxatdan o'tish uchun ism va familiyangizni kiriting.",
+        "Assalomu alaykum! To'lov nazoratchi botga xush kelibsiz.\n\nIltimos, ro'yxatdan o'tish uchun ism va familiyangizni kiriting.",
         keyboard,
       );
     } else {
@@ -743,7 +743,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
       bot.sendMessage(
         chatId,
         startText?.value ||
-          "Assalomu alaykum! To'lov nazoratchi botga xush kelibsiz.\n\nIltimos, ro'yxatdan o'tish uchun ism va familiyangizni kiriting.",
+        "Assalomu alaykum! To'lov nazoratchi botga xush kelibsiz.\n\nIltimos, ro'yxatdan o'tish uchun ism va familiyangizni kiriting.",
       );
     }
   }
@@ -1238,7 +1238,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
           bot.sendMessage(
             user.telegramId,
             approvedText?.value ||
-              "To'lovingiz tasdiqlandi! Siz guruhga qo'shildingiz. A'zolik muddati bir oyga uzaytirildi.",
+            "To'lovingiz tasdiqlandi! Siz guruhga qo'shildingiz. A'zolik muddati bir oyga uzaytirildi.",
           );
         }
       } else {
@@ -1247,7 +1247,7 @@ export async function initBot(storageInstance: IStorage): Promise<TelegramBot> {
         bot.sendMessage(
           user.telegramId,
           approvedText?.value ||
-            "To'lovingiz tasdiqlandi! Siz guruhga qo'shildingiz. A'zolik muddati bir oyga uzaytirildi.",
+          "To'lovingiz tasdiqlandi! Siz guruhga qo'shildingiz. A'zolik muddati bir oyga uzaytirildi.",
         );
       }
 

@@ -1,28 +1,38 @@
 import * as cron from "node-cron";
 import { IStorage } from "./storage";
 import TelegramBot from "node-telegram-bot-api";
+import { PaymentStatus } from "@shared/schema";
 
 export function setupScheduler(storage: IStorage, bot: TelegramBot) {
+  // Reminder times
   const reminderHours = ["09:00", "15:00", "21:00"];
   
+  // Schedule reminders for each hour
   reminderHours.forEach(hour => {
+    // Format for node-cron: minute hour * * *
     const [h, m] = hour.split(":");
     
+    // Schedule job to run at specified time every day
     cron.schedule(`${m} ${h} * * *`, async () => {
       await sendExpiryReminders(storage, bot);
     });
   });
   
+  // Every day at 23:59, check and remove expired users
   cron.schedule("59 23 * * *", async () => {
     await processExpiredUsers(storage, bot);
   });
   
+  // For testing purposes, also check every minute
   cron.schedule("* * * * *", async () => {
     console.log("Running minute-by-minute checks...");
+    // Check for expiry reminders every minute (for testing)
     await sendExpiryReminders(storage, bot);
+    // Check for expired users every minute (for testing)
     await processExpiredUsers(storage, bot);
   });
   
+  // Log that scheduler is set up
   console.log("Scheduler set up for reminders and expiry checks");
 }
 
@@ -30,6 +40,7 @@ async function sendExpiryReminders(storage: IStorage, bot: TelegramBot) {
   try {
     console.log("Checking for expiry reminders...");
     
+    // Check for users expiring in 3 days
     const users3Days = await storage.getUsersByExpiryDate(3);
     console.log(`Found ${users3Days.length} users expiring in 3 days`);
     
@@ -41,6 +52,7 @@ async function sendExpiryReminders(storage: IStorage, bot: TelegramBot) {
       console.log(`Sending 3-day reminder to user ${user.fullName} (ID: ${user.id}), expires on ${expiryDate}`);
       
       try {
+        // Create keyboard for payment
         const keyboard = {
           keyboard: [
             [{ text: '💰 To\'lovni amalga oshirish' }]
